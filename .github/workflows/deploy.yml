@@ -39,15 +39,14 @@ jobs:
 
       - name: Upload artifacts
         run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/scheduler/dist"
           rsync -az --delete dist/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/scheduler/dist/
           rsync -az package.json package-lock.json ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/scheduler/
 
-      - name: Install prod deps + restart
+      - name: Install prod deps
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
             cd /var/www/scheduler
-
             npm ci --omit=dev
-            npm run build
           EOF
